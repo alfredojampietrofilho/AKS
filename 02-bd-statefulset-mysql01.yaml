@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysqlbd
+  namespace: exercicio-kube
+spec:
+  selector:
+    matchLabels:
+      app: mysqlbd
+  serviceName: svc-mysqlbd
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysqlbd
+    spec:
+      containers:
+        - name: mysqlbd
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: "MYSQL_ROOT_PASSWORD"
+              value: a1b2c3d4
+            - name: "MYSQL_DATABASE"
+              value: exercicio-kube
+            - name: "MYSQL_PASSWORD"
+              value: a1b2c3d4
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: bd-claim
+  volumeClaimTemplates:
+  - metadata:
+      name: bd-claim
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "default"
+      resources:
+        requests:
+          storage: 5Gi
+          
